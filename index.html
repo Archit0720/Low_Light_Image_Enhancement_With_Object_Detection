@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Object Detection in Low-Light</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(-45deg, #1f1c2c, #928dab, #1f1c2c, #928dab);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+      transition: background 1s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 2rem;
+      text-align: center;
+      flex-grow: 1;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 3rem;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+      animation: bounce 2s infinite;
+    }
+
+    /* Button Styles */
+    .btn {
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 2px solid #fff;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+      transform: translateY(-5px);
+    }
+
+    .form-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    input[type="file"] {
+      padding: 0.6rem;
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+      color: #fff;
+      margin-top: 1rem;
+    }
+
+    input[type="file"]:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Image Card Styles */
+    .image-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+
+    .image-card {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 1.5rem;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      width: 280px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .image-card:hover {
+      transform: scale(1.05);
+    }
+
+    .image-card img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .image-card h3 {
+      margin-top: 0.8rem;
+      font-size: 1.3rem;
+      text-shadow: 1px 1px rgba(0, 0, 0, 0.5);
+    }
+
+    .image-card a {
+      margin-top: 1rem;
+      display: inline-block;
+    }
+
+    /* Floating Action Button */
+    .fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background-color: #ff4d4d;
+      color: #fff;
+      border-radius: 50%;
+      padding: 1rem;
+      font-size: 1.8rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .fab:hover {
+      background-color: #ff0000;
+      transform: scale(1.1);
+    }
+
+    /* Footer Styles */
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background-color: rgba(0, 0, 0, 0.5);
+      width: 100%;
+      font-size: 1.1rem;
+    }
+
+    footer a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 1rem;
+      font-size: 1.2rem;
+      transition: color 0.3s;
+    }
+
+    footer a:hover {
+      color: #ff4d4d;
+    }
+
+    /* Bouncing Effect */
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-15px);
+      }
+    }
+
+    /* Fun Popup */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 2rem;
+      border-radius: 10px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .popup button {
+      margin-top: 1rem;
+      padding: 0.5rem 1.5rem;
+      background-color: #ff4d4d;
+      color: white;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .popup button:hover {
+      background-color: #ff0000;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🕶️ Low-Light Image Detection</h1>
+    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+      <div class="form-buttons">
+        <input type="file" name="image" required />
+        <button class="btn" type="submit"><i class="fas fa-upload"></i> Upload</button>
+        <button class="btn" type="button" onclick="resetForm()"><i class="fas fa-redo"></i> Reset</button>
+        <button class="btn" type="button" onclick="changeTheme()"><i class="fas fa-paint-brush"></i> Change Theme</button>
+        <button class="btn" type="button" onclick="revealFunFact()"><i class="fas fa-lightbulb"></i> Fun Fact</button>
+        <button class="btn" type="button" onclick="showJoke()"><i class="fas fa-smile"></i> Joke</button>
+      </div>
+    </form>
+
+    {% if original_image %}
+    <div class="results">
+      <div class="image-grid">
+        <div class="image-card">
+          <img src="{{ url_for('static', filename=original_image) }}" alt="Original Image">
+          <h3>Original</h3>
+        </div>
+        <div class="image-card">
+          <img src="{{ url_for('static', filename=enhanced_image) }}" alt="Enhanced Image">
+          <h3>Enhanced</h3>
+          <a class="btn" href="{{ url_for('static', filename=enhanced_image) }}" download>
+            <i class="fas fa-download"></i> Download
+          </a>
+        </div>
+        <div class="image-card">
+          <img src="{{ url_for('static', filename=detected_image) }}" alt="Detection Result">
+          <h3>Detected</h3>
+          <a class="btn" href="{{ url_for('static', filename=detected_image) }}" download>
+            <i class="fas fa-download"></i> Download
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Footer with Links -->
+  <footer>
+    <p>Contact Me: <a href="mailto:your.email@example.com">architdogra07@gmail.com</a></p>
+    <p>Check out my work on <a href="https://github.com/Archit0720" target="_blank">GitHub</a></p>
+  </footer>
+
+  <div class="popup" id="funFactPopup">
+    <p id="funFactText">Did you know? The Eiffel Tower can be 15 cm taller during the summer!</p>
+    <button onclick="closePopup()">Close</button>
+  </div>
+
+  <script>
+    function resetForm() {
+      document.getElementById("uploadForm").reset();
+    }
+
+    // Change Theme dynamically
+    function changeTheme() {
+      const randomColor = `hsl(${Math.random() * 360}, 100%, 75%)`;
+      document.body.style.color = randomColor;
+      document.querySelectorAll('.btn').forEach(btn => {
+        btn.style.backgroundColor = randomColor;
+        btn.style.borderColor = randomColor;
+      });
+    }
+
+    // Show Fun Fact Popup
+    function revealFunFact() {
+      const facts = [
+        "Honey never spoils.",
+        "Octopuses have three hearts.",
+        "Bananas are berries, but strawberries aren't!",
+        "A day on Venus is longer than a year on Venus.",
+        "The Eiffel Tower can be 15 cm taller during summer."
+      ];
+      document.getElementById('funFactText').innerText = facts[Math.floor(Math.random() * facts.length)];
+      document.getElementById('funFactPopup').style.display = 'block';
+    }
+
+    // Show Joke Popup
+    function showJoke() {
+      const jokes = [
+        "Why don't skeletons fight each other? They don't have the guts!",
+        "I told my computer I needed a break, and now it won’t stop sending me Kit-Kats!",
+        "What’s orange and sounds like a parrot? A carrot!"
+      ];
+      alert(jokes[Math.floor(Math.random() * jokes.length)]);
+    }
+
+    // Close the Popup
+    function closePopup() {
+      document.getElementById('funFactPopup').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
