@@ -3,7 +3,11 @@ I have created a project with which you can upload a image with low light , it w
 
 Steps to execute :
 * Create a virtual  environment
-* Activate it 
+  
+* Activate it
+ 
 *Install the requirements 
-*Save all the given files in an folder 
+
+*Save all the given files in a folder 
+
 * Execute app.py , it will host your page (html page) and there you can upload images 
